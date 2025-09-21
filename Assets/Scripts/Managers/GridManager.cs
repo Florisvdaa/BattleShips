@@ -49,7 +49,7 @@ public class GridManager : MonoBehaviour
         switch(cell.state)
         {
             case CellState.Empty: v.SetColor(Color.cyan * 0.3f); break;
-            case CellState.Ship: v.SetColor(Color.gray * 0.6f); break; // alleen tonen op eigen bord
+            case CellState.Ship: v.SetColor(new Color(0.2f, 0.6f, 0.2f)); break; // alleen tonen op eigen bord
             case CellState.Miss: v.SetColor(Color.blue * 0.7f); break;
             case CellState.Hit: v.SetColor(Color.red); break;
         }

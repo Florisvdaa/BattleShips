@@ -85,6 +85,8 @@ public class GameManager : MonoBehaviour
                 if (hit) score.AddAIHit(); else turns.Next();
                 UIManager.Instance.SetScore(score.PlayerHits, score.AIHits);
                 if (AllSunk(playerShips)) { UIManager.Instance.SetStatus("Verloren!"); yield break; }
+
+                yield return new WaitForSeconds(turnDelay);
             }
             yield return null;
         }
