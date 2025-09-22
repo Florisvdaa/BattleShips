@@ -1,4 +1,5 @@
 public enum Turn { Player, AI }
+
 public class TurnSystem
 {
     public Turn Current { get; private set; } = Turn.Player;

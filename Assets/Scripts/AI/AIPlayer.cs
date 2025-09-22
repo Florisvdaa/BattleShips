@@ -13,19 +13,14 @@ public class AIPlayer : PlayerBase
                 candidates.Add(new Vector2Int(x, y));
     }
 
-
     public override void DoTurn(System.Action<bool> onFinished)
     {
-        // Heel simpel: kies random uit nog niet-geschoten cellen;
-        // uitbreiding: gewicht geven aan buren van een hit
         Vector2Int pick = PickCell();
         if (targetGrid.TryGetCell(pick, out var cell))
         {
             bool hit = cell.Shoot();
             targetGrid.UpdateView(cell);
 
-
-            // Hunt: als hit, push buren naar voorkant
             if (hit)
             {
                 PushIfValid(pick + Vector2Int.up);
@@ -38,10 +33,8 @@ public class AIPlayer : PlayerBase
         else onFinished?.Invoke(false);
     }
 
-
     private Vector2Int PickCell()
     {
-        // Verwijder al geschoten cellen uit kandidaten
         for (int i = candidates.Count - 1; i >= 0; i--)
         {
             if (!targetGrid.TryGetCell(candidates[i], out var c)) { candidates.RemoveAt(i); continue; }
@@ -50,7 +43,6 @@ public class AIPlayer : PlayerBase
         if (candidates.Count == 0) return Vector2Int.zero;
         return candidates[Random.Range(0, candidates.Count)];
     }
-
 
     private void PushIfValid(Vector2Int p)
     {

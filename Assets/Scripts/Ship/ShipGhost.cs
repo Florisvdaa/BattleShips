@@ -7,12 +7,12 @@ public class ShipGhost : MonoBehaviour
 
     public void SetPosition(Vector3 worldPos)
     {
-        transform.position = worldPos;
+        transform.position = worldPos; // hoogte wordt door PlacementController +offset gezet
     }
 
     public void Rotate()
     {
         vertical = !vertical;
-        transform.rotation = Quaternion.Euler(0,vertical ? 0 : 90, 0);
+        transform.rotation = Quaternion.Euler(0, vertical ? 0 : 90, 0);
     }
 }

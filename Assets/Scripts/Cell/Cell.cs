@@ -4,13 +4,13 @@ public enum CellState { Empty, Ship, Miss, Hit }
 
 public class Cell
 {
-    public Vector2Int gridPos {  get; private set; }
+    public Vector2Int gridPos { get; private set; }
     public CellState state { get; private set; } = CellState.Empty;
     public Ship occupyingShip { get; private set; }
-    
+
     public Cell(Vector2Int pos) { gridPos = pos; }
 
-    public void PlaceShip(Ship ship) 
+    public void PlaceShip(Ship ship)
     {
         occupyingShip = ship;
         state = CellState.Ship;
@@ -18,7 +18,7 @@ public class Cell
 
     public bool Shoot()
     {
-        if(state == CellState.Empty)
+        if (state == CellState.Empty)
         {
             state = CellState.Miss;
             return false;
@@ -29,8 +29,7 @@ public class Cell
             occupyingShip?.RegisterHit(gridPos);
             return true;
         }
-
-        // Allready shot leave it as it is
+        // al geschoten
         return state == CellState.Hit;
     }
 }

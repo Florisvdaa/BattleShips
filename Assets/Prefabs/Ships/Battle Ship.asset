@@ -14,3 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: Battle Ship
   length: 4
+  color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  ghostPrefab: {fileID: 5638709686540616721, guid: 708da731f380a24459b2643465cdd3ef, type: 3}
+  shipVisualPrefab: {fileID: 5638709686540616721, guid: 708da731f380a24459b2643465cdd3ef, type: 3}

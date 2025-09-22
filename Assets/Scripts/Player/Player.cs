@@ -8,14 +8,8 @@ public class Player : PlayerBase
 
     public override void Init() { }
 
-    private void Start()
-    {
-        
-    }
-
     public override void DoTurn(Action<bool> onFinished)
     {
-        // Wait for click
         StartCoroutine(WaitClick(onFinished));
     }
 
@@ -31,9 +25,17 @@ public class Player : PlayerBase
                     var view = hitInfo.collider.GetComponent<CellVisualiser>();
                     if (view && targetGrid.TryGetCell(view.gridPos, out var cell))
                     {
-                        bool h = cell.Shoot();
-                        targetGrid.UpdateView(cell);
-                        hit = h; acted = true;
+                        // blokkeer al-geschoten cellen
+                        if (cell.state == CellState.Miss || cell.state == CellState.Hit)
+                        {
+                            // niks doen
+                        }
+                        else
+                        {
+                            bool h = cell.Shoot();
+                            targetGrid.UpdateView(cell);
+                            hit = h; acted = true;
+                        }
                     }
                 }
             }

@@ -15,7 +15,7 @@ public static class ShipPlacement
 
             var cells = new List<Vector2Int>();
             bool blocked = false;
-            for (int i = 0; i < ship.Def.length; i++) 
+            for (int i = 0; i < ship.Def.length; i++)
             {
                 var p = start + (vertical ? new Vector2Int(0, i) : new Vector2Int(i, 0));
                 if (!grid.TryGetCell(p, out var c) || c.state != CellState.Empty) { blocked = true; break; }
@@ -23,8 +23,6 @@ public static class ShipPlacement
             }
             if (blocked) continue;
 
-
-            // Claim
             foreach (var cp in cells)
             {
                 grid.TryGetCell(cp, out var cell);

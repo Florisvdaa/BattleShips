@@ -11,18 +11,16 @@ public class GridManager : MonoBehaviour
     [Header("Prefabs")]
     [SerializeField] private GameObject cellPrefab;
 
-    private Dictionary<Vector2Int, Cell> cells = new();
-    private Dictionary<Vector2Int, CellVisualiser> cellsVisuals = new();
+    [Header("Visuals")]
+    [SerializeField] private bool revealShips = true;   // playerGrid: true, aiGrid: false
 
-    private void Awake()
-    {
-        Build();
-    }
+    private Dictionary<Vector2Int, Cell> cells = new();
+    private Dictionary<Vector2Int, CellVisualiser> views = new();
 
     public void Build()
     {
         Clear();
-        for (int y =0; y < height; y++)
+        for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
@@ -33,39 +31,66 @@ public class GridManager : MonoBehaviour
                 var go = Instantiate(cellPrefab, GridToWorld(pos), Quaternion.identity, transform);
                 var view = go.GetComponent<CellVisualiser>();
                 view.Init(pos);
-                cellsVisuals[pos] = view;
+                views[pos] = view;
             }
-        }
-    }
-
-    public Vector3 GridToWorld(Vector2Int pos) => new Vector3(pos.x * cellSize, 0f, pos.y * cellSize);
-    
-    public bool TryGetCell(Vector2Int p, out Cell c) => cells.TryGetValue(p, out c);
-    public IEnumerable<Cell> AllCells() => cells.Values;
-
-    public void UpdateView(Cell cell)
-    {
-        if (!cellsVisuals.TryGetValue(cell.gridPos, out var v)) return;
-        switch(cell.state)
-        {
-            case CellState.Empty: v.SetColor(Color.cyan * 0.3f); break;
-            case CellState.Ship: v.SetColor(new Color(0.2f, 0.6f, 0.2f)); break; // alleen tonen op eigen bord
-            case CellState.Miss: v.SetColor(Color.blue * 0.7f); break;
-            case CellState.Hit: v.SetColor(Color.red); break;
         }
     }
 
     public void Clear()
     {
-        foreach (Transform child in transform)
-        {
-            Destroy(child.gameObject);
-        }
+        foreach (Transform child in transform) Destroy(child.gameObject);
         cells.Clear();
-        cellsVisuals.Clear();
+        views.Clear();
     }
 
-    // References
+    public Vector3 GridToWorld(Vector2Int pos) => new Vector3(pos.x * cellSize, 0f, pos.y * cellSize);
+    public bool TryGetCell(Vector2Int p, out Cell c) => cells.TryGetValue(p, out c);
+    public bool TryGetView(Vector2Int p, out CellVisualiser v) => views.TryGetValue(p, out v);
+    public IEnumerable<Cell> AllCells() => cells.Values;
+
+    public void UpdateView(Cell cell)
+    {
+        if (!views.TryGetValue(cell.gridPos, out var v)) return;
+
+        // Kleur afgeleiden
+        if (cell.state == CellState.Ship)
+        {
+            if (revealShips)
+            {
+                var col = cell.occupyingShip?.Def?.color ?? (Color.gray * 0.6f);
+                v.Refresh(cell.state, col);
+            }
+            else
+            {
+                v.Refresh(CellState.Empty); // verberg schepen op dit bord
+            }
+        }
+        else
+        {
+            v.Refresh(cell.state);
+        }
+    }
+
+    // Preview helpers voor placement
+    public void SetPreview(IEnumerable<Vector2Int> cellsToPreview, PreviewKind kind, ShipDefinition def)
+    {
+        foreach (var p in cellsToPreview)
+        {
+            if (views.TryGetValue(p, out var v))
+            {
+                v.SetPreview(kind, def ? def.color : Color.green);
+            }
+        }
+    }
+
+    public void ClearAllPreviews()
+    {
+        foreach (var v in views.Values) v.ClearPreview();
+    }
+
+    // Properties
     public int Width => width;
     public int Height => height;
+    public float CellSize => cellSize;
+    public bool RevealShips { get => revealShips; set => revealShips = value; }
 }

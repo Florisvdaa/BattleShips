@@ -25,8 +25,9 @@ public class UIManager : MonoBehaviour
     {
         if (statusText) statusText.text = s;
     }
-    public void SetScore(int player, int ai) 
+
+    public void SetScore(int player, int ai)
     {
-        if (scoreText) scoreText.text = $"Speler: {player} AI: {ai}"; 
+        if (scoreText) scoreText.text = $"Speler: {player} AI: {ai}";
     }
 }

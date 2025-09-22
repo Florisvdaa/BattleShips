@@ -14,3 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: Aircraft Carrier
   length: 5
+  color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  ghostPrefab: {fileID: 5638709686540616721, guid: 770734cd12dc97e4583501e81c15494f, type: 3}
+  shipVisualPrefab: {fileID: 5638709686540616721, guid: 770734cd12dc97e4583501e81c15494f, type: 3}
