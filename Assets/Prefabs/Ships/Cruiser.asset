@@ -15,5 +15,5 @@ MonoBehaviour:
   displayName: Cruiser
   length: 3
   color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  ghostPrefab: {fileID: 5638709686540616721, guid: 9f39f684fd5c49b45bc4f7896c6dbd6d, type: 3}
+  ghostPrefab: {fileID: 5638709686540616721, guid: b77359e4038b9704385c2c98230f6362, type: 3}
   shipVisualPrefab: {fileID: 5638709686540616721, guid: 9f39f684fd5c49b45bc4f7896c6dbd6d, type: 3}
