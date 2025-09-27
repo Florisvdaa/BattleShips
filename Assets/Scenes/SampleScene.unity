@@ -542,12 +542,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mouseIndicator: {fileID: 1895806725}
-  cellIndicator: {fileID: 337579370}
   inputManager: {fileID: 2100360400}
   grid: {fileID: 1860130094}
   objectsDatabase: {fileID: 11400000, guid: aa16e6daa38cd7e458f84fd6fe139868, type: 2}
   selectedObjectIndex: -1
   gridVisualization: {fileID: 192809626}
+  previewSystem: {fileID: 975295331}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1008,6 +1008,7 @@ Transform:
   - {fileID: 1895806726}
   - {fileID: 1833519863}
   - {fileID: 337579371}
+  - {fileID: 975295330}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &573050092
@@ -1390,6 +1391,53 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4165187268090244, guid: 11a653b9169986c4f9436a3002fb4516, type: 3}
   m_PrefabInstance: {fileID: 900469442}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &975295329
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 975295330}
+  - component: {fileID: 975295331}
+  m_Layer: 0
+  m_Name: PreviewSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &975295330
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 975295329}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 553446231}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &975295331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 975295329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d44fe8211dfddbf4a99fc8f6d2ecd305, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  previewYOffset: 0.06
+  cellIndicator: {fileID: 337579370}
+  previewMaterialPrefab: {fileID: 2100000, guid: 11ff86b4bbdc982489e070276c7ae83f, type: 2}
 --- !u!1 &984221367
 GameObject:
   m_ObjectHideFlags: 0
