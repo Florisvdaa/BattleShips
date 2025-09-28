@@ -1,23 +1,27 @@
 using System;
 using UnityEngine;
 
+// Manages the visual feedback of structure placement previews
 public class PreviewSystem : MonoBehaviour
 {
     [SerializeField] private float previewYOffset = 0.06f;
     [SerializeField] private GameObject cellIndicator;
     [SerializeField] private Material previewMaterialPrefab;
-    
+    [SerializeField] private float rotatedXOffset = -0.5f;
+
     private GameObject previewObject;
     private Material previewMaterialInstance;
     private Renderer cellIndicatorRenderer;
 
     private void Start()
     {
+        // Create a separate material instance to tint preview objects
         previewMaterialInstance = new Material(previewMaterialPrefab);
         cellIndicator.SetActive(false);
         cellIndicatorRenderer = cellIndicator.GetComponentInChildren<Renderer>();
     }
 
+    // Initializes preview visuals for a selected object
     public void StartShowingPlacementPreview(GameObject prefab, Vector2Int size)
     {
         previewObject = Instantiate(prefab);
@@ -26,7 +30,8 @@ public class PreviewSystem : MonoBehaviour
         cellIndicator.SetActive(true);
     }
 
-    private void PrepareCursor(Vector2Int size)
+    // Adjusts the cursor indicator to match object size
+    public void PrepareCursor(Vector2Int size)
     {
         if (size.x > 0 ||  size.y > 0)
         {
@@ -35,6 +40,7 @@ public class PreviewSystem : MonoBehaviour
         }
     }
 
+    // Applies the preview material to all renderers in the object
     public void PreparePreview(GameObject previewObject)
     {
         Renderer[] renderers = previewObject.GetComponentsInChildren<Renderer>();
@@ -49,18 +55,22 @@ public class PreviewSystem : MonoBehaviour
         }
     }
 
+    // Cleans up the preview object and indicator
     public void StopShowinPreview()
     {
         cellIndicator.SetActive(false);
         Destroy(previewObject);
     }
 
+    // Updates the preview visuals at a new position and applies placement validity feedback
     public void UpdatePosition(Vector3 pos, bool validity)
     {
         MovePreview(pos);
         MoveCursor(pos);
         ApplyFeedback(validity);
     }
+
+    // Tints the preview and indicator based on validity
     private void ApplyFeedback(bool validity)
     {
         Color c = validity ? Color.white : Color.red;
@@ -76,6 +86,21 @@ public class PreviewSystem : MonoBehaviour
 
     private void MovePreview(Vector3 pos)
     {
-        previewObject.transform.position = new Vector3(pos.x, pos.y + previewYOffset, pos.z);
+        float offsetX = previewObject.transform.rotation.eulerAngles.y == 90f ? rotatedXOffset : 0f;
+
+        previewObject.transform.position = new Vector3(
+            pos.x + offsetX,
+            pos.y + previewYOffset,
+            pos.z
+        );
     }
+
+    public void SetRotation(float angle)
+    {
+        if (previewObject != null)
+        {
+            previewObject.transform.rotation = Quaternion.Euler(0, angle, 0);
+        }
+    }
+
 }

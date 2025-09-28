@@ -2,28 +2,36 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+// Manages user input, raycasting, and UI interaction checks
 public class InputManager : MonoBehaviour
 {
     [Header("Camera")]
     [SerializeField] private Camera sceneCamera;
-
     [SerializeField] private LayerMask placementLayermask;
 
     private Vector3 lastPos;
 
-    public event Action OnClicked, OnExit;
+    // Input events
+    public event Action OnClicked, OnExit, OnRotation;
 
     private void Update()
     {
+        // Left mouse click
         if (Input.GetMouseButtonDown(0))
             OnClicked?.Invoke();
 
+        // ESC key to cancel placement
         if (Input.GetKeyDown(KeyCode.Escape)) 
              OnExit?.Invoke(); 
+
+        if(Input.GetKeyDown(KeyCode.R))
+            OnRotation?.Invoke();
     }
 
+    // Checks if the mouse is over a UI element (e.g., button, panel)
     public bool IsPointerOverUI() => EventSystem.current.IsPointerOverGameObject();
 
+    // Casts a ray from the mouse position into the scene to find a valid placement point
     public Vector3 GetSelectedMapPosition()
     {
         Vector3 mousePos = Input.mousePosition;
