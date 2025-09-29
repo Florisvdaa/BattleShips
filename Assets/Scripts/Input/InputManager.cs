@@ -24,7 +24,7 @@ public class InputManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape)) 
              OnExit?.Invoke(); 
 
-        if(Input.GetKeyDown(KeyCode.R))
+        if(Input.GetKeyDown(KeyCode.Space))
             OnRotation?.Invoke();
     }
 

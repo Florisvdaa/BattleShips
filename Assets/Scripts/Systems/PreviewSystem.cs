@@ -7,11 +7,12 @@ public class PreviewSystem : MonoBehaviour
     [SerializeField] private float previewYOffset = 0.06f;
     [SerializeField] private GameObject cellIndicator;
     [SerializeField] private Material previewMaterialPrefab;
-    [SerializeField] private float rotatedXOffset = -0.5f;
+    //[SerializeField] private float rotatedXOffset = -0.5f;
 
     private GameObject previewObject;
     private Material previewMaterialInstance;
     private Renderer cellIndicatorRenderer;
+    private Quaternion baseRotation = Quaternion.identity;
 
     private void Start()
     {
@@ -25,6 +26,9 @@ public class PreviewSystem : MonoBehaviour
     public void StartShowingPlacementPreview(GameObject prefab, Vector2Int size)
     {
         previewObject = Instantiate(prefab);
+
+        baseRotation = previewObject.transform.rotation;
+        
         PreparePreview(previewObject);
         PrepareCursor(size);
         cellIndicator.SetActive(true);
@@ -63,10 +67,10 @@ public class PreviewSystem : MonoBehaviour
     }
 
     // Updates the preview visuals at a new position and applies placement validity feedback
-    public void UpdatePosition(Vector3 pos, bool validity)
+    public void UpdatePosition(Vector3 cornerPos, Vector3 centerPos, bool validity)
     {
-        MovePreview(pos);
-        MoveCursor(pos);
+        MoveCursor(cornerPos);
+        MovePreview(centerPos);
         ApplyFeedback(validity);
     }
 
@@ -84,14 +88,12 @@ public class PreviewSystem : MonoBehaviour
         cellIndicator.transform.position = pos;
     }
 
-    private void MovePreview(Vector3 pos)
+    private void MovePreview(Vector3 centerPos)
     {
-        float offsetX = previewObject.transform.rotation.eulerAngles.y == 90f ? rotatedXOffset : 0f;
-
         previewObject.transform.position = new Vector3(
-            pos.x + offsetX,
-            pos.y + previewYOffset,
-            pos.z
+        centerPos.x,
+        centerPos.y + previewYOffset,
+        centerPos.z
         );
     }
 
@@ -99,7 +101,7 @@ public class PreviewSystem : MonoBehaviour
     {
         if (previewObject != null)
         {
-            previewObject.transform.rotation = Quaternion.Euler(0, angle, 0);
+            previewObject.transform.rotation = baseRotation * Quaternion.Euler(0f, angle, 0f);
         }
     }
 

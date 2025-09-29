@@ -22,6 +22,8 @@ public class PlacementSystem : MonoBehaviour
     private List<GameObject> placedObjects = new();             // Keeps track of placed GameObjects
     private Vector3Int lastDetectedPosition = Vector3Int.zero;  // Used to detect mouse movement across grid cells
     private bool isRotated = false;                             // false = horizontal (0°), true = vertical (90°)
+    private bool previewDirty = false;
+
 
     private void Start()
     {
@@ -47,18 +49,18 @@ public class PlacementSystem : MonoBehaviour
     {
         StopPlacement();
         selectedObjectIndex = objectsDatabase.objectsData.FindIndex(x => x.ID == ID);
-        
-        if (selectedObjectIndex < 0)
-        {
-            Debug.LogError($"No ID found {ID}");
-            return;
-        }
+        if (selectedObjectIndex < 0) { Debug.LogError($"No ID found {ID}"); return; }
 
         gridVisualization.SetActive(true);
-        previewSystem.StartShowingPlacementPreview(objectsDatabase.objectsData[selectedObjectIndex].Prefab, objectsDatabase.objectsData[selectedObjectIndex].Size);
+        previewSystem.StartShowingPlacementPreview(
+            objectsDatabase.objectsData[selectedObjectIndex].Prefab,
+            objectsDatabase.objectsData[selectedObjectIndex].Size);
+
         inputManager.OnRotation += RotateStructure;
         inputManager.OnClicked += PlaceStructure;
         inputManager.OnExit += StopPlacement;
+
+        previewDirty = true; // force first draw
     }
 
     // Rotates the current structure
@@ -71,6 +73,8 @@ public class PlacementSystem : MonoBehaviour
 
         previewSystem.PrepareCursor(rotatedSize);
         previewSystem.SetRotation(isRotated ? 90f : 0f);
+
+        previewDirty = true;
     }
 
     // Ends placement mode
@@ -87,37 +91,35 @@ public class PlacementSystem : MonoBehaviour
     // Instantiates and places the selected structure on the grid
     private void PlaceStructure()
     {
-        if (inputManager.IsPointerOverUI())
-            return;
+        if (inputManager.IsPointerOverUI()) return;
 
         Vector3 mousePos = inputManager.GetSelectedMapPosition();
         Vector3Int gridPos = grid.WorldToCell(mousePos);
 
-
-        if (!CheckPlacementValidity(gridPos, selectedObjectIndex))
-            return;
-
-        GameObject newGO = Instantiate(objectsDatabase.objectsData[selectedObjectIndex].Prefab);
-        newGO.transform.position = grid.CellToWorld(gridPos);
-        newGO.transform.rotation = Quaternion.Euler(0, isRotated ? 90f : 0f, 0); // Preserve rotation
-
-        placedObjects.Add(newGO);
+        if (!CheckPlacementValidity(gridPos, selectedObjectIndex)) return;
 
         var data = objectsDatabase.objectsData[selectedObjectIndex];
         Vector2Int rotatedSize = GetRotatedSize(data.Size);
 
-        // Type-specific
-        if (gridDataMap.TryGetValue(data.ID, out GridData selectedData))
-        {
-            selectedData.AddObjectAt(gridPos, rotatedSize, data.ID, placedObjects.Count - 1);
-        }
+        GameObject newGO = Instantiate(data.Prefab);
 
-        // Add to global GridData
+        Quaternion baseRot = data.Prefab.transform.rotation;
+
+        // place at the center of the occupied footprint
+        newGO.transform.position = GetFootprintCenter(gridPos, data.Size, isRotated);
+        newGO.transform.rotation = baseRot * Quaternion.Euler(0f, isRotated ? 90f : 0f, 0f);
+
+        placedObjects.Add(newGO);
+
+        if (gridDataMap.TryGetValue(data.ID, out GridData selectedData))
+            selectedData.AddObjectAt(gridPos, rotatedSize, data.ID, placedObjects.Count - 1);
+
         allShipsData.AddObjectAt(gridPos, rotatedSize, data.ID, placedObjects.Count - 1);
 
-        // Hide preview after placing
-        previewSystem.UpdatePosition(grid.CellToWorld(gridPos), false);
+        // keep the white tile at the corner, but we don't need to keep showing it now
+        previewSystem.UpdatePosition(grid.CellToWorld(gridPos), newGO.transform.position, false);
     }
+
 
     // Checks if the structure can be legally placed at the current grid position
     private bool CheckPlacementValidity(Vector3Int gridPos, int selectedObjectIndex)
@@ -131,25 +133,43 @@ public class PlacementSystem : MonoBehaviour
     // Updates the preview based on the current mouse position
     private void Update()
     {
-        if (selectedObjectIndex < 0)
-            return;
+        if (selectedObjectIndex < 0) return;
 
         Vector3 mousePos = inputManager.GetSelectedMapPosition();
         Vector3Int gridPos = grid.WorldToCell(mousePos);
 
-        // Only update when mouse has moved to a new grid cell
-        if (lastDetectedPosition != gridPos)
+        if (lastDetectedPosition != gridPos || previewDirty)
         {
             bool placementValidity = CheckPlacementValidity(gridPos, selectedObjectIndex);
 
+            var data = objectsDatabase.objectsData[selectedObjectIndex];
+            Vector3 corner = grid.CellToWorld(gridPos);                         // for cursor
+            Vector3 center = GetFootprintCenter(gridPos, data.Size, isRotated); // for ship
+
             mouseIndicator.transform.position = mousePos;
-            previewSystem.UpdatePosition(grid.CellToWorld(gridPos), placementValidity);
+            previewSystem.UpdatePosition(corner, center, placementValidity);
+
             lastDetectedPosition = gridPos;
+            previewDirty = false;
         }
     }
 
     private Vector2Int GetRotatedSize(Vector2Int originalSize)
     {
         return isRotated ? new Vector2Int(originalSize.y, originalSize.x) : originalSize;
+    }
+
+    // helper: from bottom-left corner to center of the footprint
+    private Vector3 GetFootprintCenter(Vector3Int gridPos, Vector2Int size, bool rotated)
+    {
+        int w = rotated ? size.y : size.x; // cells in X
+        int h = rotated ? size.x : size.y; // cells in Z
+
+        Vector3 corner = grid.CellToWorld(gridPos);
+        Vector3 cell = grid.cellSize;              // supports non-1 cell sizes
+
+        // offset from corner to center of occupied rectangle
+        Vector3 offset = new Vector3(w * cell.x * 0.5f, 0f, h * cell.z * 0.5f);
+        return corner + offset;
     }
 }
