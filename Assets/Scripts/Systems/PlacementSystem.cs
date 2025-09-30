@@ -16,7 +16,7 @@ public class PlacementSystem : MonoBehaviour
     [SerializeField] private PreviewSystem previewSystem;
     [SerializeField] private GridSettings gridSettings;
 
-    
+    private Dictionary<int, int> placedCounts = new();          // ID -> count
     private GridData allShipsData;                              // Holds global grid occupancy data (regardless of type)
     private Dictionary<int, GridData> gridDataMap;              // Individual data containers for each ship type (by ID)
     private List<GameObject> placedObjects = new();             // Keeps track of placed GameObjects
@@ -42,19 +42,38 @@ public class PlacementSystem : MonoBehaviour
         // Apply grid dimensions and origin from settings
         allShipsData.SetGridBounds(gridSettings.width, gridSettings.height);
         allShipsData.SetGridOrigin(gridSettings.origin);
+
+        placedCounts.Clear();
+        foreach (var d in objectsDatabase.objectsData)
+            placedCounts[d.ID] = 0;
+
+        UIManager.Instance.InitializeButtons(objectsDatabase);
     }
 
     // Begins the placement mode for a selected object ID
     public void StartPlacement(int ID)
     {
         StopPlacement();
+
         selectedObjectIndex = objectsDatabase.objectsData.FindIndex(x => x.ID == ID);
         if (selectedObjectIndex < 0) { Debug.LogError($"No ID found {ID}"); return; }
 
+        var data = objectsDatabase.objectsData[selectedObjectIndex];
+
+        // cap check: block if already at limit
+        if (placedCounts.TryGetValue(data.ID, out var count) && count >= data.maxPlacements)
+        {
+            // already capped, just ensure UI is up to date and bail
+            UIManager.Instance.UpdatePlacementState(data.ID, count, data.maxPlacements);
+            selectedObjectIndex = -1;
+            return;
+        }
+
         gridVisualization.SetActive(true);
-        previewSystem.StartShowingPlacementPreview(
-            objectsDatabase.objectsData[selectedObjectIndex].Prefab,
-            objectsDatabase.objectsData[selectedObjectIndex].Size);
+        //previewSystem.StartShowingPlacementPreview(
+        //    objectsDatabase.objectsData[selectedObjectIndex].Prefab,
+        //    objectsDatabase.objectsData[selectedObjectIndex].Size);
+        previewSystem.StartShowingPlacementPreview(data.Prefab, data.Size);
 
         inputManager.OnRotation += RotateStructure;
         inputManager.OnClicked += PlaceStructure;
@@ -85,7 +104,9 @@ public class PlacementSystem : MonoBehaviour
         previewSystem.StopShowinPreview();
         inputManager.OnClicked -= PlaceStructure;
         inputManager.OnExit -= StopPlacement;
+        inputManager.OnRotation -= RotateStructure;
         lastDetectedPosition = Vector3Int.zero;
+        previewDirty = false;
     }
 
     // Instantiates and places the selected structure on the grid
@@ -116,8 +137,15 @@ public class PlacementSystem : MonoBehaviour
 
         allShipsData.AddObjectAt(gridPos, rotatedSize, data.ID, placedObjects.Count - 1);
 
-        // keep the white tile at the corner, but we don't need to keep showing it now
-        previewSystem.UpdatePosition(grid.CellToWorld(gridPos), newGO.transform.position, false);
+        // update counts + UI
+        placedCounts[data.ID] = placedCounts.GetValueOrDefault(data.ID) + 1;
+        UIManager.Instance.UpdatePlacementState(data.ID, placedCounts[data.ID], data.maxPlacements);
+
+        // reached the cap? auto-exit placement so they can't place more of this one
+        if (placedCounts[data.ID] >= data.maxPlacements)
+            StopPlacement();
+        else
+            previewSystem.UpdatePosition(grid.CellToWorld(gridPos), newGO.transform.position, false);
     }
 
 

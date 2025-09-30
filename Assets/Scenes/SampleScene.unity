@@ -255,6 +255,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 45594133}
   m_CullTransparentMesh: 1
+--- !u!1 &165718403
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 165718404}
+  - component: {fileID: 165718405}
+  m_Layer: 0
+  m_Name: UIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &165718404
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 165718403}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &165718405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 165718403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18b684d1ec0d07045bdb5b753bd084a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bindings:
+  - ID: 0
+    button: {fileID: 984221369}
+    remainingText: {fileID: 0}
+  - ID: 1
+    button: {fileID: 256094523}
+    remainingText: {fileID: 0}
+  - ID: 2
+    button: {fileID: 1306714100}
+    remainingText: {fileID: 0}
+  - ID: 3
+    button: {fileID: 573050094}
+    remainingText: {fileID: 0}
 --- !u!1 &192809626
 GameObject:
   m_ObjectHideFlags: 0
@@ -377,7 +434,7 @@ GameObject:
   - component: {fileID: 256094524}
   - component: {fileID: 256094523}
   m_Layer: 5
-  m_Name: Button (1)
+  m_Name: Cruiser ship button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1026,7 +1083,7 @@ GameObject:
   - component: {fileID: 573050095}
   - component: {fileID: 573050094}
   m_Layer: 5
-  m_Name: Button (3)
+  m_Name: Carrier ship button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1457,7 +1514,7 @@ GameObject:
   - component: {fileID: 984221370}
   - component: {fileID: 984221369}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Default ship button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1883,7 +1940,7 @@ GameObject:
   - component: {fileID: 1306714101}
   - component: {fileID: 1306714100}
   m_Layer: 5
-  m_Name: Button (2)
+  m_Name: Battle ship button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2492,3 +2549,4 @@ SceneRoots:
   - {fileID: 986781289}
   - {fileID: 553446231}
   - {fileID: 1072745111}
+  - {fileID: 165718404}
