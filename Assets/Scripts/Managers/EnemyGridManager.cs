@@ -5,13 +5,16 @@ using UnityEngine.EventSystems;
 public class EnemyGridManager : MonoBehaviour
 {
     [SerializeField] private Grid grid;
+    [SerializeField] private InputManager inputManager;
     [SerializeField] private GridSettings enemyGridSettings;
     [SerializeField] private GameObject hitMarkerPrefab;
     [SerializeField] private GameObject missMarkerPrefab;
     [SerializeField] private LayerMask enemyGridLayer;
+    [SerializeField] private Camera sceneCamera;
 
     private GridData enemyGridData;
     private HashSet<Vector3> firedShots = new();
+    private Vector3 lastPos;
 
     private void Start()
     {
@@ -26,23 +29,23 @@ public class EnemyGridManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
         {
-            Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3Int gridPos = grid.WorldToCell(mouseWorld);
+            Vector3 hitPos = GetSelectedMapPosition();  // Use raycast hit from InputManager
+            Vector3Int gridPos = grid.WorldToCell(hitPos);
 
             TryShootAt(gridPos);
         }
     }
     private void TryShootAt(Vector3Int pos)
     {
-        if (firedShots.Contains(pos)) return; // Already fired
+        if (firedShots.Contains(pos)) return;
         firedShots.Add(pos);
 
-        bool isHit = enemyGridData.CanPlaceObjectAt(pos, Vector2Int.one) == false;
+        // Your hit detection logic here
 
-        Vector3 worldPos = grid.CellToWorld(pos);
-        GameObject marker = Instantiate(isHit ? hitMarkerPrefab : missMarkerPrefab, worldPos, Quaternion.identity);
-
-        Debug.Log(isHit ? "Hit!" : "Miss!");
+        // For example:
+        //bool isHit = /* your condition here */;
+        //Vector3 worldPos = grid.CellToWorld(pos);
+        //Instantiate(isHit ? hitMarkerPrefab : missMarkerPrefab, worldPos, Quaternion.identity);
     }
 
     private void PlaceEnemyShipsRandomly()
@@ -51,5 +54,17 @@ public class EnemyGridManager : MonoBehaviour
         // Loop through each ship type and randomly pick a position + rotation
         // Try until a valid spot is found
         // Use enemyGridData.AddObjectAt() to place
+    }
+    private Vector3 GetSelectedMapPosition()
+    {
+        Vector3 mousePos = Input.mousePosition;
+        mousePos.z = sceneCamera.nearClipPlane;
+        Ray ray = sceneCamera.ScreenPointToRay(mousePos);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 100, enemyGridLayer))
+        {
+            lastPos = hit.point;
+        }
+        return lastPos;
     }
 }
