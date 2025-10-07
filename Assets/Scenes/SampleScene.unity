@@ -2225,12 +2225,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grid: {fileID: 1925547136}
+  inputManager: {fileID: 0}
   enemyGridSettings: {fileID: 11400000, guid: 6a5ac8e4aa7496f4eb407c7ffde41f31, type: 2}
   hitMarkerPrefab: {fileID: 7632990740798947804, guid: 09f80394065680748a2a43cb114a4654, type: 3}
   missMarkerPrefab: {fileID: 7632990740798947804, guid: 1a717eabf80be384a80b7135b3f082fa, type: 3}
   enemyGridLayer:
     serializedVersion: 2
     m_Bits: 256
+  sceneCamera: {fileID: 0}
 --- !u!4 &718626080
 Transform:
   m_ObjectHideFlags: 0
@@ -5401,6 +5403,9 @@ MonoBehaviour:
   placementLayermask:
     serializedVersion: 2
     m_Bits: 64
+  enemyBoardLayermask:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!4 &2116994488 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7450637634044219762, guid: 0834f4aead7f01247b73d7227ae82e09, type: 3}
